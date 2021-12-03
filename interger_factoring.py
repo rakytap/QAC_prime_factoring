@@ -16,7 +16,7 @@ compose_BQM.compose_BQM.DEBUG = True
 #test for the multiplication table
 
 # The bitlengths of the binary numbers
-bitnum1 = 8
+bitnum1 = 4
 bitnum2 = 4
 
 # The abstract representattion of the binary numbers
@@ -40,19 +40,19 @@ for col in range(0, bitnum1+bitnum2):
 # test for multiplication 11x13=143
 
 # the target number
-target = 13*19#143
+target = 13*11#143
 
 # creating the represantation of the target number
 target_num = bin_num( target )
 print( 'bit length of the target number: ' + str(target_num.bit_length()) )
 
 # creating the skeleton of the unknows factors
-num1 = abstract_bin_num(5)
-num2 = abstract_bin_num(5)
+num1 = abstract_bin_num(4)
+num2 = abstract_bin_num(4)
 
 # the first and last bit should be 1
-#num1.set_bit(0,1)
-#num2.set_bit(0,1)
+num1.set_bit(0,1)
+num2.set_bit(0,1)
 #num1.set_bit(3,1)
 #num2.set_bit(3,1)
 
@@ -93,7 +93,7 @@ print( 'Solving by QBsolv' )
 from dwave_qbsolv import QBSolv
 
 # the response of QBsolve
-response = QBSolv().sample_qubo(BQM_model)
+response = QBSolv().sample_qubo(BQM_model, num_repeats=1000)
 print("samples=" + str(list(response.samples())))
 print("energies=" + str(list(response.data_vectors['energy'])))
 
@@ -152,5 +152,23 @@ print(num2.get_decimal())
 #num2.define_bit(0,1)
 #num1.define_bit(3,1)
 #num2.define_bit(3,1)
+quit()
 
+
+# Automated minor embedding
+print(' ')
+print( 'Automated minor embedding' )
+from dwave.system.samplers import DWaveSampler
+from dwave.system.composites import EmbeddingComposite
+
+# Minor-embed and sample 1000 times on a default D-Wave system
+response = EmbeddingComposite(DWaveSampler()).sample_qubo(BQM_model, num_reads=10000, chain_strength=1000)
+
+print(response)
+print(response.data())
+'''
+for (sample, energy, num_occurrences, chain_break) in response.data():
+	#(sample, energy, num_occurrences, chain_break) = item
+	print(sample, "Energy: ", energy, "Occurrences: ", num_occurrences)
+'''
 
